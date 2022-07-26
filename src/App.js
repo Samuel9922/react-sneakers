@@ -21,12 +21,21 @@ function App() {
         </ul>
       </header>
       <div className="content p-40">
-        <h1 className="mb-40">Все кроссовки</h1>
+        <div className="d-flex align-center justify-between mb-40">
+          <h1>Все кроссовки</h1>
+          <div className="search-block" d-flex>
+            <img src="\img\Search.svg" alt="Search" />
+            <input placeholder="Поиск..." />
+          </div>
+        </div>
         {/* Карточка кроссовка */}
         <div className="d-flex">
         <div className="card">
+          <div className="favorite">
+            <img src="\img\heart.svg" alt="Unliked" />
+          </div>
           <img width={133} height={112} src="/imgsneakers/1.jpg" alt="Sneakers" />
-          <h5>Мужские Кроссовки Nike Blazer Mid Suede</h5>
+          <p>Мужские Кроссовки Nike Blazer Mid Suede</p>
           <div className="d-flex justify-between align-center">
             <div className="d-flex flex-column">
               <span>Цена:</span>
@@ -38,8 +47,9 @@ function App() {
           </div>
         </div>
         <div className="card">
+        <img src="\img\heart.svg" alt="Unliked" />
           <img width={133} height={112} src="/imgsneakers/2.jpg" alt="Sneakers" />
-          <h5>Мужские Кроссовки Nike Blazer Mid Suede</h5>
+          <p>Мужские Кроссовки Nike Blazer Mid Suede</p>
           <div className="d-flex justify-between align-center">
             <div className="d-flex flex-column">
               <span>Цена:</span>
@@ -52,7 +62,7 @@ function App() {
         </div>
         <div className="card">
           <img width={133} height={112} src="/imgsneakers/3.jpg" alt="Sneakers" />
-          <h5>Мужские Кроссовки Nike Blazer Mid Suede</h5>
+          <p>Мужские Кроссовки Nike Blazer Mid Suede</p>
           <div className="d-flex justify-between align-center">
             <div className="d-flex flex-column">
               <span>Цена:</span>
@@ -65,7 +75,7 @@ function App() {
         </div>
         <div className="card">
           <img width={133} height={112} src="/imgsneakers/4.jpg" alt="Sneakers" />
-          <h5>Мужские Кроссовки Nike Blazer Mid Suede</h5>
+          <p>Мужские Кроссовки Nike Blazer Mid Suede</p>
           <div className="d-flex justify-between align-center">
             <div className="d-flex flex-column">
               <span>Цена:</span>
