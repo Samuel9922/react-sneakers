@@ -1,3 +1,4 @@
+import Card from './components/Card'
 function App() {
   return (
     <div className="wrapper clear">
@@ -71,25 +72,26 @@ function App() {
             <img src="\img\Search.svg" alt="Search" />
             <input placeholder="Поиск..." />
           </div>
-        </div>
-        {/* Карточка кроссовка */}
+          </div>
         <div className="d-flex">
-        <div className="card">
-          <div className="favorite">
-            <img src="\img\heart.svg" alt="Unliked" />
-          </div>
-          <img width={133} height={112} src="/imgsneakers/1.jpg" alt="Sneakers" />
-          <p>Мужские Кроссовки Nike Blazer Mid Suede</p>
-          <div className="d-flex justify-between align-center">
-            <div className="d-flex flex-column">
-              <span>Цена:</span>
-              <b>12 999 руб.</b>
+          {/* Карточка кроссовка */}
+          <Card />
+          <div className="card">
+            <div className="favorite">
+              <img src="\img\heart.svg" alt="Unliked" />
             </div>
-            <button className="button">
-              <img width={11} height={11} src="\img\button_1.svg" alt="" />
-            </button>
+            <img width={133} height={112} src="/imgsneakers/1.jpg" alt="Sneakers" />
+            <p>Мужские Кроссовки Nike Blazer Mid Suede</p>
+            <div className="d-flex justify-between align-center">
+              <div className="d-flex flex-column">
+                <span>Цена:</span>
+                <b>12 999 руб.</b>
+              </div>
+              <button className="button">
+                <img width={11} height={11} src="\img\button_1.svg" alt="" />
+              </button>
+            </div>
           </div>
-        </div>
         <div className="card">
         <img src="\img\heart.svg" alt="Unliked" />
           <img width={133} height={112} src="/imgsneakers/2.jpg" alt="Sneakers" />
