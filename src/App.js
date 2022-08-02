@@ -32,6 +32,7 @@ function App() {
             imageUrl={obj.imageUrl}
           />))
           }
+          
         </div>
       </div>
     </div>
