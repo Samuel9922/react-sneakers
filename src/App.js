@@ -1,63 +1,92 @@
-import React, { useEffect } from 'react';
-import Card from './components/Card';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import axios from 'axios';
 import Header from './components/Header';
 import Drawer from './components/Drawer';
+import Home from './pages/Home';
+import Favorites from './pages/Favorites';
 
 function App() {
   const [items, setItems] = React.useState([]);
   //В данном массиве хрониться карзина
   const [cartItems, setCartItems] = React.useState([]);
+  const [favorites, setFavorites] = React.useState([]);
+  const [searchValue, setSearchValue] = React.useState('');
   const [cartOpened, setCartOpened] = React.useState(false);
 
   React.useEffect(() =>{
-    //Fetch берет или отправляет данные на сервер. res преобразует в формат json, тем самым возращает корректно данныне из массива
-    //Запрос на бэкенд
-  fetch('https://62ebdac255d2bd170e77d30c.mockapi.io/items')
-    //Преобразование ответа в json
-    .then((res) => {
-      //Возвращает ответ
-      return res.json();
-    })
-      //Вытаскивает из переменной json
-    .then((json) => {
-      //Передает в useState items
-      setItems(json);
-  });
+    //get используется при получении
+    axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/items').then(res => {
+      setItems(res.data);
+    });
+    //Запрос корзины и сохранение резкльтата в useState "cartItems"
+    axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/cart').then(res => {
+      setCartItems(res.data);
+    });
+    axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/favorites').then(res => {
+      setFavorites(res.data);
+    });
   }, []);
   
   const onAddToCart = (obj) =>{
-    //При каждом клике добавляются еще один предмет. Prev анонимная функция, которая вызывает конкретное состояние
-    setCartItems(prev => [...prev, obj]);
+    //post используется при создании. Сохранение результата на сервер
+    axios.post('https://62ebdac255d2bd170e77d30c.mockapi.io/cart', obj);
+    //При каждом клике добавляются еще один предмет. Prev анонимная функция, которая вызывает конкретное состояние. Пользователю сразу выводим результат
+    setCartItems((prev) => [...prev, obj]);
+  };
+
+  const onRemoveItem = (id) =>{
+    axios.delete(`https://62ebdac255d2bd170e77d30c.mockapi.io/cart/${id}`);
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const onAddToFavorite = async (obj) =>{
+    //Если в Favorite такой же id при клике
+    if (favorites.find((favobj) => favobj.id === obj.id)) {
+      //То отправляется запрос на удаление в backend
+      axios.delete(`https://62ebdac255d2bd170e77d30c.mockapi.io/favorites/${obj.id}`);
+    } else {
+      //Дождаться ответа от backend
+      const {data} = await axios.post('https://62ebdac255d2bd170e77d30c.mockapi.io/favorites', obj);
+      //Сохранение объекта в state
+    setFavorites((prev) => [...prev, data]);
+    }
+    
+  };
+
+  const onChangeSearchInput = (event) =>{
+    setSearchValue(event.target.value);
   };
 
   return (
     <div className="wrapper clear">
       {/* Компоненты React JS */}
-      {cartOpened ? <Drawer items={cartItems} onClose={() => setCartOpened(false)} /> : null}
+      {cartOpened ? <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem}/> : null}
       <Header onClickCart = {() => setCartOpened(true)} />
-      <div className="content p-40">
-        <div className="d-flex align-center justify-between mb-40">
-          <h1>Все кроссовки</h1>
-          <div className="search-block" d-flex>
-            <img src="\img\Search.svg" alt="Search" />
-            <input placeholder="Поиск..." />
-          </div>
-          </div>
-        <div className="d-flex flex-wrap">
-          {/* Карточка кроссовка */}
-          
-          {items.map((item) => 
-          (<Card 
-            title={item.title}
-            price={item.price}
-            imageUrl={item.imageUrl}
-            onFavorite={() => console.log('Добавили в закладки')}
-            onPLus={(obj) => onAddToCart(obj)}
-          />))
-          }
-          
-        </div>
-      </div>
+      
+      <Routes>
+      <Route exact path='/'
+        element={
+        <Home 
+        items={items} 
+        searchValue={searchValue} 
+        setSearchValue={searchValue} 
+        onChangeSearchInput={onChangeSearchInput}
+        onAddToFavorite={onAddToFavorite}
+        onAddToCart={onAddToCart}
+        />}/> 
+      </Routes>
+
+      <Routes>
+      <Route exact path='/favorites'
+        element={
+        <Favorites 
+        items={favorites}
+        onAddToFavorite={onAddToFavorite}
+        />
+        }/> 
+      </Routes>
+      
     </div>
   );
 }
