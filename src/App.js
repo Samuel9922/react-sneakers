@@ -41,7 +41,8 @@ function App() {
   };
 
   const onAddToFavorite = async (obj) =>{
-    //Если в Favorite такой же id при клике
+    try {
+      //Если в Favorite такой же id при клике
     if (favorites.find((favobj) => favobj.id === obj.id)) {
       //То отправляется запрос на удаление в backend
       axios.delete(`https://62ebdac255d2bd170e77d30c.mockapi.io/favorites/${obj.id}`);
@@ -50,6 +51,9 @@ function App() {
       const {data} = await axios.post('https://62ebdac255d2bd170e77d30c.mockapi.io/favorites', obj);
       //Сохранение объекта в state
     setFavorites((prev) => [...prev, data]);
+    }
+    } catch (error) {
+      alert('Не удалось добавить в фавориты');
     }
     
   };

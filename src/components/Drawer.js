@@ -5,8 +5,10 @@ function Drawer({onClose, onRemove, items = []}){
           <h2 className="d-flex justify-between mb-30">Корзина 
           <img onClick={(onClose)} className="cu-p" src="/img/btn-remove.svg" alt="Close" />
           </h2>
-
-          <div className="items">
+          {
+            items.length > 0 ? (
+              <div>
+                <div className="items">
             {items.map((obj) => (
                 <div className="cartItem d-flex align-center mb-20">
             <div
@@ -20,8 +22,7 @@ function Drawer({onClose, onRemove, items = []}){
                 <img onClick={() => onRemove(obj.id)} className="removeBtn" src="/img/btn-remove.svg" alt="Remove" />
             </div>
               ))}
-          </div>
-
+          </div> 
           <div className="cartTotalBlock">
           <ul className="cartTotalBlock">
             <li className="d-flex">
@@ -37,6 +38,24 @@ function Drawer({onClose, onRemove, items = []}){
           </ul>
           <button className="greenButton">Оформить заказ <img src="/img/Arrow.svg" alt="Arrow" /></button>
           </div>
+              </div>
+          ):(
+          <div className="cartEmpty d-flex align-centr justify-content:center flex-column flex">
+            <img class="ml-50" width="230px" height="230px" src="/img/empty-cart.jpg" alt="empty-cart" />
+            <h2>Корзина пустая</h2>
+            <p class="opacity-6">Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ</p>
+            <button class="greenButton">
+              <img src="/img/arrow.svg" alt="Arrow" />
+              Вернуться назад
+            </button>
+          </div>
+          )}
+
+          
+
+          
+
+          
           </div>
           </div>
     );
