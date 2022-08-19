@@ -14,25 +14,32 @@ function App() {
   const [searchValue, setSearchValue] = React.useState('');
   const [cartOpened, setCartOpened] = React.useState(false);
 
-  React.useEffect(() =>{
-    //get используется при получении
-    axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/items').then(res => {
-      setItems(res.data);
-    });
+  React.useEffect(() => {
+      async function fetchData() {
+      //get используется при получении
+      const itemsRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/items');
     //Запрос корзины и сохранение резкльтата в useState "cartItems"
-    axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/cart').then(res => {
-      setCartItems(res.data);
-    });
-    axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/favorites').then(res => {
-      setFavorites(res.data);
-    });
+      const cartRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/cart');
+      const favoritesRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/favorites');
+
+      setCartItems(cartRespons.data);
+      setFavorites(favoritesRespons.data);
+      setItems(itemsRespons.data);
+    }
+
+    fetchData();
   }, []);
   
   const onAddToCart = (obj) =>{
-    //post используется при создании. Сохранение результата на сервер
-    axios.post('https://62ebdac255d2bd170e77d30c.mockapi.io/cart', obj);
-    //При каждом клике добавляются еще один предмет. Prev анонимная функция, которая вызывает конкретное состояние. Пользователю сразу выводим результат
-    setCartItems((prev) => [...prev, obj]);
+    if (cartItems.find((item) => Number(item.id) === Number(obj.id))) {
+      axios.delete(`https://62ebdac255d2bd170e77d30c.mockapi.io/cart/${obj.id}`);
+      setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));
+    } else {
+      //post используется при создании. Сохранение результата на сервер
+      axios.post('https://62ebdac255d2bd170e77d30c.mockapi.io/cart', obj);
+      //При каждом клике добавляются еще один предмет. Prev анонимная функция, которая вызывает конкретное состояние. Пользователю сразу выводим результат
+      setCartItems((prev) => [...prev, obj]);
+    }
   };
 
   const onRemoveItem = (id) =>{
@@ -73,6 +80,7 @@ function App() {
         element={
         <Home 
         items={items} 
+        cartItems={cartItems}
         searchValue={searchValue} 
         setSearchValue={searchValue} 
         onChangeSearchInput={onChangeSearchInput}
