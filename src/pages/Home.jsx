@@ -1,13 +1,33 @@
+import React from "react";
 import Card from '../components/Card';
 
-function Home({items,
-    cartItems,
+
+function Home({
+    items,
     searchValue,
     setSearchValue,
     onChangeSearchInput,
     onAddToFavorite,
-    onAddToCart}){
-    return (
+    onAddToCart,
+    isLoading
+    }){
+
+      const renderItems = () => {
+        return (isLoading 
+          ? [...Array(10)] 
+          : items.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase()))
+          ).map((item, index) => (
+          <Card 
+            key={index}
+            onFavorite={(obj) => onAddToFavorite(obj)}
+            onPLus={(obj) => onAddToCart(obj)}
+            
+            loading = {isLoading}
+            {...item}
+          />
+          ));
+      };
+        return (
         <div className="content p-40">
         <div className="d-flex align-center justify-between mb-40">
           <h1>{searchValue ? `Поиск по запросу: "${searchValue}"`: 'Все кроссовки'}</h1>
@@ -19,17 +39,7 @@ function Home({items,
           </div>
           </div>
         <div className="d-flex flex-wrap">
-          {/* Рендеринг по массиву. Реализован поиск с вводом слова с маленкой буквы */}
-          {items.filter(item => item.title.toLowerCase().includes(searchValue)).map((item, index) => (
-          <Card 
-            key={index}
-            onFavorite={(obj) => onAddToFavorite(obj)}
-            onPLus={(obj) => onAddToCart(obj)}
-            added={cartItems.some(obj => Number(obj.id) === Number(item.id))}
-            {...item}
-          />))
-          }
-          
+          {renderItems()}
         </div>
       </div>
     );

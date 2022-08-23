@@ -5,6 +5,9 @@ import Header from './components/Header';
 import Drawer from './components/Drawer';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
+import AppContext from './pages/context';
+
+// export const AppContext = React.createContext({});
 
 function App() {
   const [items, setItems] = React.useState([]);
@@ -13,6 +16,7 @@ function App() {
   const [favorites, setFavorites] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState('');
   const [cartOpened, setCartOpened] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
       async function fetchData() {
@@ -22,6 +26,7 @@ function App() {
       const cartRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/cart');
       const favoritesRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/favorites');
 
+      setIsLoading(false);
       setCartItems(cartRespons.data);
       setFavorites(favoritesRespons.data);
       setItems(itemsRespons.data);
@@ -50,9 +55,10 @@ function App() {
   const onAddToFavorite = async (obj) =>{
     try {
       //Если в Favorite такой же id при клике
-    if (favorites.find((favobj) => favobj.id === obj.id)) {
+    if (favorites.find((favobj) => Number(favobj.id) === Number(obj.id))) {
       //То отправляется запрос на удаление в backend
       axios.delete(`https://62ebdac255d2bd170e77d30c.mockapi.io/favorites/${obj.id}`);
+      setFavorites((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));
     } else {
       //Дождаться ответа от backend
       const {data} = await axios.post('https://62ebdac255d2bd170e77d30c.mockapi.io/favorites', obj);
@@ -69,8 +75,13 @@ function App() {
     setSearchValue(event.target.value);
   };
 
+  const isItemAdded = (id) => {
+    return cartItems.some((obj) => Number(obj.id) === Number(id));
+  }
+
   return (
-    <div className="wrapper clear">
+    <AppContext.Provider value={{items, cartItems, favorites, isItemAdded, onAddToFavorite}}>
+      <div className="wrapper clear">
       {/* Компоненты React JS */}
       {cartOpened ? <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem}/> : null}
       <Header onClickCart = {() => setCartOpened(true)} />
@@ -86,20 +97,19 @@ function App() {
         onChangeSearchInput={onChangeSearchInput}
         onAddToFavorite={onAddToFavorite}
         onAddToCart={onAddToCart}
+        isLoading={isLoading}
         />}/> 
       </Routes>
 
       <Routes>
       <Route exact path='/favorites'
         element={
-        <Favorites 
-        items={favorites}
-        onAddToFavorite={onAddToFavorite}
-        />
+        <Favorites />
         }/> 
       </Routes>
       
     </div>
+    </AppContext.Provider>
   );
 }
 
