@@ -2,15 +2,16 @@ import React from 'react';
 import axios from 'axios';
 
 import Info from '../components/Info';
-import AppContext from '../pages/context'
+import {useCart} from '../hooks/useCart'
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function Drawer({onClose, onRemove, items = []}){
-    const {cartItems, setCartItems} = React.useContext(AppContext);
+function Drawer({onClose, onRemove, items = [] }) {
+    const {cartItems, setCartItems, totalPrice} = useCart(); 
     const [orderId, setOrderId] = React.useState(null);
-    const [isOrderComplete, setIsOrderComplete] = React.useState();
+    const [isOrderComplete, setIsOrderComplete] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
+
     const onClickOrder = async () => {
       try {
         setIsLoading(true);
@@ -24,12 +25,11 @@ function Drawer({onClose, onRemove, items = []}){
 
       for (let i = 0; i < cartItems.length; i++) {
         const item = cartItems[i];
-          await axios.delete('https://62ebdac255d2bd170e77d30c.mockapi.io/cart' + item.id);
+          await axios.delete('https://62ebdac255d2bd170e77d30c.mockapi.io/cart/' + item.id);
           await delay(1000);
       }
-
       } catch (error) {
-        alert('Ошибка при создании заказа');
+        // alert('Ошибка при создании заказа');
       }
       setIsLoading(false);
     }
@@ -63,12 +63,12 @@ function Drawer({onClose, onRemove, items = []}){
             <li className="d-flex">
               <span>Итого: </span>
               <div></div>
-              <b>21 498 руб. </b>
+              <b>{totalPrice} руб. </b>
             </li>
             <li className="d-flex">
               <span>Налог 5%: </span>
               <div></div>
-              <b>1074 руб. </b>
+              <b>{(totalPrice / 100) * 5} руб. </b>
             </li>
           </ul>
           <button disabled={isLoading}  onClick={onClickOrder} className="greenButton">Оформить заказ <img src="/img/Arrow.svg" alt="Arrow" /></button>

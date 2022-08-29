@@ -180,7 +180,7 @@ h2{
     cursor: pointer;
     transition: background 0.1s ease-in-out;
 
-    &:disabled{
+    &:disabled {
       background-color:#bebebe !important;
       cursor: default;
     }
