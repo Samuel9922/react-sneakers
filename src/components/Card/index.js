@@ -8,13 +8,14 @@ import styles from './Card.module.scss';
 function Card({id, onFavorite, imageUrl, title, price, onPLus, favorited = false, loading = false}){
     const {isItemAdded} = React.useContext(AppContext);
     const [isFavorite, setIsFavorite] = React.useState(favorited);
+    const obj = {id, parentId: id, title, imageUrl, price};
     
     const onClickPlus = () => {
-        onPLus({id, title, imageUrl, price});
+        onPLus(obj);
     };
 
     const onClickFavorite = () => {
-        onFavorite({id, title, imageUrl, price});
+        onFavorite(obj);
         setIsFavorite(!isFavorite);
     };
 
@@ -37,9 +38,11 @@ function Card({id, onFavorite, imageUrl, title, price, onPLus, favorited = false
               </ContentLoader>
             ) : (
             <>
-            <div className={styles.favorite} onClick={onClickFavorite}>
-            <img src={isFavorite ? '/img/heart1.svg' : '/img/heart.svg' }  alt="Unliked" />
+            {onFavorite && (
+                <div className={styles.favorite} onClick={onClickFavorite}>
+                <img src={isFavorite ? '/img/heart1.svg' : '/img/heart.svg' }  alt="Unliked" />
             </div>
+            )}
             <img width={133} height={112} src={imageUrl} alt="Sneakers" />
             <p>{title}</p>
             <div className="d-flex justify-between align-center">
@@ -47,12 +50,13 @@ function Card({id, onFavorite, imageUrl, title, price, onPLus, favorited = false
                 <span>Цена:</span>
                 <b>{price} руб.</b>
             </div>
-            <img 
+            {onPLus &&  
+            (<img 
             className={styles.plus} 
             onClick={onClickPlus} 
             // Смена конпок при нажатии на нее
             src={isItemAdded(id) ? '/img/Checked.svg' : '/img/Plus.svg' } 
-            alt="Plus" />
+            alt="Plus" />)}
             </div>
             </>
             )}

@@ -6,6 +6,7 @@ import Drawer from './components/Drawer';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
 import AppContext from './pages/context';
+import Orders from './pages/Orders';
 
 // export const AppContext = React.createContext({});
 
@@ -20,8 +21,9 @@ function App() {
 
   React.useEffect(() => {
       async function fetchData() {
-      //get используется при получении
-      const itemsRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/items');
+      try {
+        //get используется при получении. А также укорочения кода можно использовать Promise.all
+        const itemsRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/items');
     //Запрос корзины и сохранение резкльтата в useState "cartItems"
       const cartRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/cart');
       const favoritesRespons = await axios.get('https://62ebdac255d2bd170e77d30c.mockapi.io/favorites');
@@ -30,26 +32,46 @@ function App() {
       setCartItems(cartRespons.data);
       setFavorites(favoritesRespons.data);
       setItems(itemsRespons.data);
+      } catch (error) {
+        alert('Ошибка при запросе данных');
+      }
     }
 
     fetchData();
   }, []);
   
-  const onAddToCart = (obj) =>{
-    if (cartItems.find((item) => Number(item.id) === Number(obj.id))) {
-      axios.delete(`https://62ebdac255d2bd170e77d30c.mockapi.io/cart/${obj.id}`);
-      setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));
+  const onAddToCart = async (obj) =>{
+    try {
+    const findItem = cartItems.find((item) => Number(item.parentId) === Number(obj.id));
+    if (findItem) {
+      setCartItems((prev) => prev.filter((item) => Number(item.parentId) !== Number(obj.id)));
+      await axios.delete(`https://62ebdac255d2bd170e77d30c.mockapi.io/cart/${findItem.id}`);
     } else {
-      //post используется при создании. Сохранение результата на сервер
-      axios.post('https://62ebdac255d2bd170e77d30c.mockapi.io/cart', obj);
       //При каждом клике добавляются еще один предмет. Prev анонимная функция, которая вызывает конкретное состояние. Пользователю сразу выводим результат
       setCartItems((prev) => [...prev, obj]);
+      //post используется при создании. Сохранение результата на сервер
+      const {data} = await axios.post('https://62ebdac255d2bd170e77d30c.mockapi.io/cart', obj);
+      setCartItems((prev) => 
+      prev.map((item) => {
+        if (item.parentId === data.parentId){
+          return{
+            ...item,
+            id: data.id,
+          };
+        }
+        return item;
+      }),
+      );
     }
+  } catch (error) {
+    alert('Ошибка при добавлении в корзину');
+    console.error(error);
+  }
   };
 
   const onRemoveItem = (id) =>{
     axios.delete(`https://62ebdac255d2bd170e77d30c.mockapi.io/cart/${id}`);
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(id)));
   };
 
   const onAddToFavorite = async (obj) =>{
@@ -76,14 +98,15 @@ function App() {
   };
 
   const isItemAdded = (id) => {
-    return cartItems.some((obj) => Number(obj.id) === Number(id));
+    return cartItems.some((obj) => Number(obj.parentId) === Number(id));
   }
 
   return (
-    <AppContext.Provider value={{items, cartItems, favorites, isItemAdded, onAddToFavorite, setCartOpened, setCartItems}}>
+    <AppContext.Provider value={{items, cartItems, favorites, isItemAdded, onAddToFavorite, onAddToCart, setCartOpened, setCartItems}}>
       <div className="wrapper clear">
       {/* Компоненты React JS */}
-      {cartOpened ? <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem}/> : null}
+      <Drawer items={cartItems} onClose={() => setCartOpened(false)} onRemove={onRemoveItem} opened={cartOpened}/>
+
       <Header onClickCart = {() => setCartOpened(true)} />
       
       <Routes>
@@ -108,6 +131,13 @@ function App() {
         }/> 
       </Routes>
       
+      <Routes>
+      <Route exact path='/Orders'
+        element={
+        <Orders />
+        }/> 
+      </Routes>
+
     </div>
     </AppContext.Provider>
   );
