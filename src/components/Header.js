@@ -23,12 +23,12 @@ function Header(props){
           </li>
             <Link to="/favorites">
               <li className="mr-10 cu-p">
-                <img width={18} height={18} src="/img/izbr.png" alt="Закладки"/>
+                <img width={18} height={18} src="img/izbr.png" alt="Закладки"/>
               </li>
             </Link>
             <li>
               <Link to="/orders">
-                  <img width={18} height={18} src="/img/user.png" alt="Пользователь"/>
+                  <img width={18} height={18} src="img/user.png" alt="Пользователь"/>
               </Link>
             </li>
         </ul>
