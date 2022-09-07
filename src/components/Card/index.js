@@ -40,7 +40,7 @@ function Card({id, onFavorite, imageUrl, title, price, onPLus, favorited = false
             <>
             {onFavorite && (
                 <div className={styles.favorite} onClick={onClickFavorite}>
-                <img src={isFavorite ? '/img/heart1.svg' : '/img/heart.svg' }  alt="Unliked" />
+                <img src={isFavorite ? 'img/heart1.svg' : 'img/heart.svg' }  alt="Unliked" />
             </div>
             )}
             <img width={133} height={112} src={imageUrl} alt="Sneakers" />
@@ -55,7 +55,7 @@ function Card({id, onFavorite, imageUrl, title, price, onPLus, favorited = false
             className={styles.plus} 
             onClick={onClickPlus} 
             // Смена конпок при нажатии на нее
-            src={isItemAdded(id) ? '/img/Checked.svg' : '/img/Plus.svg' } 
+            src={isItemAdded(id) ? 'img/Checked.svg' : 'img/Plus.svg' } 
             alt="Plus" />)}
             </div>
             </>
