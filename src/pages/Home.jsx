@@ -34,7 +34,7 @@ function Home({
           <div className="search-block d-flex">
             <img src="\img\Search.svg" alt="Search"/>
             {/* Кнопка очистки */}
-            {searchValue && <img onClick={() => setSearchValue('')} className="clear cu-p" src="/img/btn-remove.svg" alt="Clear" />}
+            {searchValue && <img onClick={() => setSearchValue('')} className="clear cu-p" src="img/btn-remove.svg" alt="Clear" />}
             <input onChange={onChangeSearchInput} value={searchValue} placeholder="Поиск..." />
           </div>
           </div>
